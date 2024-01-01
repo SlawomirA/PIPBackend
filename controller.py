@@ -96,13 +96,17 @@ async def predict(x: float, y: float, k: int = 2, model: KNN = Depends(get_knn_i
     :param model: trained model
     :return: predicted class
     """
-    if k < 1:
+    if 1 > k > 5:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                            detail="K must be greater than 0")
+                            detail="K must be greater than 0 and less than 5")
 
     if not isinstance(x, float) or not isinstance(y, float):
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                             detail="X and Y must be floats")
+
+    if not isinstance(k, int) :
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                            detail="k must be integer")
 
     return {"predicted_category": model.predict_category(x, y, k)}
 
@@ -131,6 +135,9 @@ async def generate_points(x: float = 0, y: float = 0, r: float = 1, amount: int 
     if category < 0:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                             detail="Category must be greater than 0")
+    if isinstance(category, int):
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                            detail="Category must be integer")
 
     if (not isinstance(x, float)
             or not isinstance(y, float)
